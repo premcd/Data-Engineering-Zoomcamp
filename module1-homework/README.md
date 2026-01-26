@@ -14,9 +14,6 @@ connect to pgadmin on localhost:8080 enter user credentials
 register server with hostname:port -> db:5432 or postgres:5432
 
 
-Question 7. Terraform Workflow
-Answer: terraform init, terraform apply -auto-approve, terraform destroy
-
 
 Prepare the Data
 To download the green taxi trips, create a docker container with a postgresql database:
@@ -60,23 +57,26 @@ trip_distance = (SELECT MAX(trip_distance) FROM green_taxi_data WHERE trip_dista
 Question 5. Biggest pickup zone
 
 SELECT
-MAX(tip_amount),
-zpu."Zone"
-
+zpu."Zone",
+COUNT(1) AS "total_amount"
 
 FROM
 green_taxi_data g JOIN zones zpu
 ON g."PULocationID" = zpu."LocationID"
-JOIN zones dpo
-ON g."DOLocationID" = dpo."LocationID"
 
 WHERE 
-lpep_pickup_datetime >= '2025-11-01' AND
-lpep_pickup_datetime <  '2025-12-01' AND
-zpu."Zone" = 'East Harlem North'
+g.lpep_pickup_datetime >= '2025-11-18 00:00:00' AND
+g.lpep_pickup_datetime <=  '2025-11-19 00:00:00'
 
 GROUP BY
 zpu."Zone"
+
+ORDER BY
+"total_amount" DESC
+
+LIMIT 100
+Answer ======> East Harlem North
+
 
 
 Question 6. Largest tip
@@ -101,3 +101,7 @@ ORDER BY
 g.tip_amount DESC
 
 ====> answer: Yorkville West
+
+
+Question 7. Terraform Workflow
+Answer: terraform init, terraform apply -auto-approve, terraform destroy
