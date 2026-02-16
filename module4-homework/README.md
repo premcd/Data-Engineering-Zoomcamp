@@ -35,7 +35,7 @@ Your model fct_trips has been running successfully for months. A new value 6 now
 What happens when you run dbt test --select fct_trips?
 
 dbt will skip the test because the model didn't change
->answer is: dbt will fail the test, returning a non-zero exit code
+`answer is: dbt will fail the test, returning a non-zero exit code`
 dbt will pass the test with a warning about the new value
 dbt will update the configuration to include the new value
 
@@ -48,7 +48,7 @@ What is the count of records in the fct_monthly_zone_revenue model?
 
 12,998
 14,120
->answer is:12,184
+`answer is:12,184`
 15,421
 
 
@@ -58,7 +58,7 @@ Using the fct_monthly_zone_revenue table, find the pickup zone with the highest 
 
 Which zone had the highest revenue?
 
->answer is:East Harlem North
+`answer is:East Harlem North`
 Morningside Heights
 East Harlem South
 Washington Heights South
@@ -81,7 +81,7 @@ Using the fct_monthly_zone_revenue table, what is the total number of trips (tot
 
 500,234
 350,891
->answer is:384,624
+`answer is:384,624`
 421,509
 
 ```
@@ -106,7 +106,7 @@ Rename fields to match your project's naming conventions (e.g., PUlocationID →
 What is the count of records in stg_fhv_tripdata?
 
 42,084,899
->Answer is: 43,244,693
+`Answer is: 43,244,693`
 22,998,722
 44,112,187
 
