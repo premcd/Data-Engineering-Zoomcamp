@@ -1,0 +1,206 @@
+Question 1. dbt Lineage and Execution
+
+Given a dbt project with the following structure:
+
+models/
+├── staging/
+│   ├── stg_green_tripdata.sql
+│   └── stg_yellow_tripdata.sql
+└── intermediate/
+    └── int_trips_unioned.sql (depends on stg_green_tripdata & stg_yellow_tripdata)
+
+If you run dbt run --select int_trips_unioned, what models will be built?
+
+    stg_green_tripdata, stg_yellow_tripdata, and int_trips_unioned (upstream dependencies)
+    Any model with upstream and downstream dependencies to int_trips_unioned
+>>>>answer is>>>int_trips_unioned only
+    int_trips_unioned, int_trips, and fct_trips (downstream dependencies)
+
+
+
+Question 2. dbt Tests
+
+You've configured a generic test like this in your schema.yml:
+
+columns:
+  - name: payment_type
+    data_tests:
+      - accepted_values:
+          arguments:
+            values: [1, 2, 3, 4, 5]
+            quote: false
+
+Your model fct_trips has been running successfully for months. A new value 6 now appears in the source data.
+
+What happens when you run dbt test --select fct_trips?
+
+    dbt will skip the test because the model didn't change
+>>>>answer is>>>dbt will fail the test, returning a non-zero exit code
+    dbt will pass the test with a warning about the new value
+    dbt will update the configuration to include the new value
+
+
+Question 3. Counting Records in fct_monthly_zone_revenue
+
+After running your dbt project, query the fct_monthly_zone_revenue model.
+
+What is the count of records in the fct_monthly_zone_revenue model?
+
+    12,998
+    14,120
+>>>>answer is>>>12,184
+    15,421
+
+
+Question 4. Best Performing Zone for Green Taxis (2020)
+
+Using the fct_monthly_zone_revenue table, find the pickup zone with the highest total revenue (revenue_monthly_total_amount) for Green taxi trips in 2020.
+
+Which zone had the highest revenue?
+
+>>>answer is>>>East Harlem North
+    Morningside Heights
+    East Harlem South
+    Washington Heights South
+
+ '''
+SELECT pickup_zone,
+revenue_month,
+revenue_monthly_total_amount,
+SUM(revenue_monthly_total_amount) OVER (PARTITION BY pickup_zone ORDER BY revenue_month) AS total_per_zone
+FROM `terraform-course-485512.dbt_mdr.fct_monthly_zone_revenue`
+WHERE date_trunc(revenue_month, year) = '2020-01-01 00:00:00 UTC'
+AND service_type = 'Green'
+ORDER BY total_per_zone DESC;
+'''
+
+
+Question 5. Green Taxi Trip Counts (October 2019)
+
+Using the fct_monthly_zone_revenue table, what is the total number of trips (total_monthly_trips) for Green taxis in October 2019?
+
+    500,234
+    350,891
+>>>>answer is>>>384,624
+    421,509
+
+'''
+WITH table as (
+select pickup_zone, revenue_month, SUM(total_monthly_trips) as total from `terraform-course-485512.dbt_mdr.fct_monthly_zone_revenue`
+where revenue_month = '2019-10-01 00:00:00 UTC'
+AND service_type = 'Green'
+GROUP BY pickup_zone, revenue_month
+ORDER BY total DESC)
+SELECT SUM(table.total) from table
+'''
+
+Question 6. Build a Staging Model for FHV Data
+
+Create a staging model for the For-Hire Vehicle (FHV) trip data for 2019.
+
+    Load the FHV trip data for 2019 into your data warehouse
+    Create a staging model stg_fhv_tripdata with these requirements:
+        Filter out records where dispatching_base_num IS NULL
+        Rename fields to match your project's naming conventions (e.g., PUlocationID → pickup_location_id)
+
+What is the count of records in stg_fhv_tripdata?
+
+    42,084,899
+    43,244,693
+    22,998,722
+    44,112,187
+
+
+
+
+
+
+
+Tests de SQL:-------------------------------------------
+SELECT
+*
+  
+FROM
+  `terraform-course-485512.dbt_mdr.fct_monthly_zone_revenue`
+
+order by pickup_zone, revenue_month
+
+LIMIT 110
+;
+
+
+
+
+SELECT
+pickup_zone, revenue_monthly_total_amount, revenue_month
+  
+FROM
+  `terraform-course-485512.dbt_mdr.fct_monthly_zone_revenue`
+
+WHERE revenue_month >= '2020-01-01 00:00:00 UTC' AND revenue_month <= '2020-12-31 00:00:00 UTC'
+AND service_type = 'Green'
+ORDER by revenue_monthly_total_amount
+DESC
+LIMIT 110;
+
+
+
+select   date_trunc( revenue_month, year) as revenue_year,
+SUM(revenue_monthly_total_amount) as year_total_amount
+from  `terraform-course-485512.dbt_mdr.fct_monthly_zone_revenue`
+GROUP BY revenue_year
+order by year_total_amount
+;
+
+----------------------
+---- la j ai le total revenue par zone- mais il me faut le total revenue / zone / year - now fait la meme chose que ci-dessous-------
+select   pickup_zone, SUM(revenue_monthly_total_amount) as revenue_zone
+from  `terraform-course-485512.dbt_mdr.fct_monthly_zone_revenue`
+WHERE service_type = 'Green'
+AND date_trunc(revenue_month, year) = '2020-01-01 00:00:00 UTC'
+GROUP BY pickup_zone
+order by revenue_zone DESC
+;
+
+
+---- returns the total amount per zone per month--now fait la meme chose que ci-dessu --- 
+
+SELECT pickup_zone,
+revenue_month,
+revenue_monthly_total_amount,
+SUM(revenue_monthly_total_amount) OVER (PARTITION BY pickup_zone ORDER BY revenue_month) AS total_per_zone
+FROM `terraform-course-485512.dbt_mdr.fct_monthly_zone_revenue`
+WHERE date_trunc(revenue_month, year) = '2020-01-01 00:00:00 UTC'
+AND service_type = 'Green'
+ORDER BY total_per_zone DESC;
+---------------------
+-----test avec with------
+with s as (
+SELECT pickup_zone,
+revenue_month,
+revenue_monthly_total_amount,
+SUM(revenue_monthly_total_amount) OVER (PARTITION BY pickup_zone ORDER BY revenue_month) AS total_per_zone
+FROM `terraform-course-485512.dbt_mdr.fct_monthly_zone_revenue`
+WHERE service_type = 'Green'
+ORDER BY total_per_zone DESC
+)
+Select pickup_zone,
+revenue_month,
+revenue_monthly_total_amount,
+SUM(s.total_per_zone) OVER (PARTITION BY date_trunc(s.revenue_month, year) ORDER BY s.total_per_zone) AS total_per_zone_per_year
+FROM s
+ORDER BY total_per_zone_per_year DESC;
+
+
+
+
+---------
+
+
+select pickup_zone ,
+
+SUM (revenue_monthly_total_amount) OVER(PARTITION BY pickup_zone ORDER BY pickup_zone) as revenue_year
+from  `terraform-course-485512.dbt_mdr.fct_monthly_zone_revenue`;
+
+
+WITH partitionned_by_zones as (select * from  `terraform-course-485512.dbt_mdr.fct_monthly_zone_revenue` , PARTITION BY pickup_zone)
