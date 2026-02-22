@@ -1,3 +1,13 @@
+🚀 Week 3 of Data Engineering Zoomcamp by @DataTalksClub complete!
+
+Just finished Module 3 - Data Warehousing with BigQuery. Learned how to:
+
+✅ Create external tables from GCS bucket data
+✅ Build materialized tables in BigQuery
+✅ Partition and cluster tables for performance
+✅ Understand columnar storage and query optimization
+✅ Analyze NYC taxi data at scale
+
 Homework answers:
 
 Create an external table using the Yellow Taxi Trip Records:

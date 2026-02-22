@@ -1,3 +1,13 @@
+Week 4 of Data Engineering Zoomcamp by @DataTalksClub complete!
+
+Just finished Module 4 - Analytics Engineering with dbt. Learned how to:
+
+✅ Build transformation models with dbt
+✅ Create staging, intermediate, and fact tables
+✅ Write tests to ensure data quality
+✅ Understand lineage and model dependencies
+✅ Analyze revenue patterns across NYC zones
+
 Question 1. dbt Lineage and Execution
 
 Given a dbt project with the following structure:

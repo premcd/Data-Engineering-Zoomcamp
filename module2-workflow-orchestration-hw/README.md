@@ -1,3 +1,15 @@
+Week 2 of Data Engineering Zoomcamp by @DataTalksClub and @Will Russell complete!
+
+Just finished Module 2 - Workflow Orchestration with @Kestra. Learned how to:
+
+✅ Orchestrate data pipelines with Kestra flows
+✅ Use variables and expressions for dynamic workflows
+✅ Implement backfill for historical data
+✅ Schedule workflows with timezone support
+✅ Process NYC taxi data (Yellow & Green) for 2019-2021
+
+
+
 Quiz Questions
 
 Complete the quiz shown below. It's a set of 6 multiple-choice questions to test your understanding of workflow orchestration, Kestra, and ETL pipelines.
