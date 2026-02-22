@@ -210,3 +210,4 @@ __marimo__/
 data-engineering-zoomcamp/
 *.csv
 *.parquet
+module2-workflow-orchestration-hw/service-account.json
